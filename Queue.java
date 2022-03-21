@@ -1,104 +1,205 @@
 package sklad;
+
 import java.util.concurrent.locks.ReentrantLock;
+
 import java.util.concurrent.locks.Condition;
+
 public class Queue
+
 {
-    private static final  int SIZE =10; //Размер склада
-    private static  int[] queue;      //Массив склада
-    private static int start;
-    private static int end; //Указатели на начало, конец склада
-    private ReentrantLock lock;
-    private  Condition isNotFull;
-    private  Condition isNotEmpty ;
-    private boolean prov=true;
-    public Queue()      //Создаём склад
-    {
-    	lock = new ReentrantLock();
-    	isNotFull = lock.newCondition();
-        isNotEmpty = lock.newCondition();
-        queue=new int [SIZE];
-        start=0;
-        end=-1;
-    }
-    private int nextCycle(int pos)//Номер следующего элемента
-    {
-    	return (pos + 1) % SIZE;
-      
-    }
-    private void put(int val)//Добавляет элемент
-    {
-    	end=nextCycle(end);
-    	queue[end]=val;
-    }
-    private void print() //Вывод элементов склада
-    {
-        int i=start;
-        while(i!=nextCycle(end))
-        {
-            System.out.print(queue[i]+" ");
-            i=nextCycle(i);
-        }
-    }
-    private boolean  full()
-    {
-        return(nextCycle(nextCycle(end))==start);
-    } //Проверка на заполненность склада
-    private boolean empty()
-    {
-        return(nextCycle(end)==start);
-    } //Проверка на пустоту
-    public void putCheck (int val) throws InterruptedException //Добавляем элемент на склад
-    {
-        lock.lock();
-        try
-        {
-            while (full())
-            {
-                System.out.println("Sorry, the sklad is full");
-                isNotFull.await();
-            }
-            prov=false;
-            put(val);
-            System.out.println("Producer put a new product" + " "+val);
-            System.out.print(" On sklad "+" ");
-            print();
-            System.out.println();
-            isNotFull.signal();
-        }
-        finally
-        {
-            lock.unlock();
-        }
-    }
-    public int get () throws InterruptedException //Достаём элемент со склада
-    {
-        prov=true;
-        int k;
-        lock.lock();
-        try
-        {
-            while (empty())
-            {
-                System.out.println("Sorry, the sklad is empty");
-                isNotEmpty.await();
-            }
-            System.out.println("Customer get a new product "+queue[start]);
-            k=queue[start];
-            start=nextCycle(start);
-            System.out.print("On sklad ");
-            print();
-            System.out.println();
-            isNotEmpty.signal();
-            return(k);
-        }
-        finally
-        {
-            lock.unlock();
-        }
-    }
-    public int razmer()
-    {
-        return(SIZE);
-    } //Размер склада
-    public boolean proverit () { return(prov);}//Проверка на пустоту/полноту
+
+private static final int SIZE =10; //Р Р°Р·РјРµСЂ СЃРєР»Р°РґР°
+
+private static int[] queue; //РњР°СЃСЃРёРІ СЃРєР»Р°РґР°
+
+private static int start;
+
+private static int end; //РЈРєР°Р·Р°С‚РµР»Рё РЅР° РЅР°С‡Р°Р»Рѕ, РєРѕРЅРµС† СЃРєР»Р°РґР°
+
+private ReentrantLock lock;
+
+private Condition isNotFull;
+
+private Condition isNotEmpty ;
+
+private boolean prov=true;
+
+public Queue() //РЎРѕР·РґР°С‘Рј СЃРєР»Р°Рґ
+
+{
+
+lock = new ReentrantLock();
+
+isNotFull = lock.newCondition();
+
+isNotEmpty = lock.newCondition();
+
+queue=new int [SIZE];
+
+start=0;
+
+end=-1;
+
+}
+
+private int nextCycle(int pos)//РќРѕРјРµСЂ СЃР»РµРґСѓСЋС‰РµРіРѕ СЌР»РµРјРµРЅС‚Р°
+
+{
+
+return (pos + 1) % SIZE;
+
+}
+
+private void put(int val)//Р”РѕР±Р°РІР»СЏРµС‚ СЌР»РµРјРµРЅС‚
+
+{
+
+end=nextCycle(end);
+
+queue[end]=val;
+
+}
+
+private void print() //Р’С‹РІРѕРґ СЌР»РµРјРµРЅС‚РѕРІ СЃРєР»Р°РґР°
+
+{
+
+int i=start;
+
+while(i!=nextCycle(end))
+
+{
+
+System.out.print(queue[i]+" ");
+
+i=nextCycle(i);
+
+}
+
+}
+
+private boolean full()
+
+{
+
+return(nextCycle(nextCycle(end))==start);
+
+} //РџСЂРѕРІРµСЂРєР° РЅР° Р·Р°РїРѕР»РЅРµРЅРЅРѕСЃС‚СЊ СЃРєР»Р°РґР°
+
+private boolean empty()
+
+{
+
+return(nextCycle(end)==start);
+
+} //РџСЂРѕРІРµСЂРєР° РЅР° РїСѓСЃС‚РѕС‚Сѓ
+
+public void putCheck (int val) throws InterruptedException //Р”РѕР±Р°РІР»СЏРµРј СЌР»РµРјРµРЅС‚ РЅР° СЃРєР»Р°Рґ
+
+{
+
+lock.lock();
+
+try
+
+{
+
+while (full())
+
+{
+
+System.out.println("Sorry, the sklad is full");
+
+isNotFull.await();
+
+}
+
+prov=false;
+
+put(val);
+
+System.out.println("Producer put a new product" + " "+val);
+
+System.out.print(" On sklad "+" ");
+
+print();
+
+System.out.println();
+
+isNotFull.signal();
+
+}
+
+finally
+
+{
+
+lock.unlock();
+
+}
+
+}
+
+public int get () throws InterruptedException //Р”РѕСЃС‚Р°С‘Рј СЌР»РµРјРµРЅС‚ СЃРѕ СЃРєР»Р°РґР°
+
+{
+
+prov=true;
+
+int k;
+
+lock.lock();
+
+try
+
+{
+
+while (empty())
+
+{
+
+System.out.println("Sorry, the sklad is empty");
+
+isNotEmpty.await();
+
+}
+
+System.out.println("Customer get a new product "+queue[start]);
+
+k=queue[start];
+
+start=nextCycle(start);
+
+System.out.print("On sklad ");
+
+print();
+
+System.out.println();
+
+isNotEmpty.signal();
+
+return(k);
+
+}
+
+finally
+
+{
+
+lock.unlock();
+
+}
+
+}
+
+public int razmer()
+
+{
+
+return(SIZE);
+
+} //Р Р°Р·РјРµСЂ СЃРєР»Р°РґР°
+
+public boolean proverit () { return(prov);}//РџСЂРѕРІРµСЂРєР° РЅР° РїСѓСЃС‚РѕС‚Сѓ/РїРѕР»РЅРѕС‚Сѓ
+
 }
