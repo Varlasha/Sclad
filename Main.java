@@ -26,17 +26,25 @@ public interface Queue {
 Общие требования:
 1. Не использовать коллекции.
 2. Не использовать доступ по умолчанию. Указывать доступ для классов, данных, методов.
-3. Обязательно наличие в коде комментариев.
 */
 package sklad;
 
 public class Main
+
 {
-    public static void main (String[] args)
-    {
-        Queue queue =new Queue();//Ñîçäà¸ì ñêëàä
-        Producer p=new Producer(queue);//Çàïóñêàåì ïðîèçâîäèòåëåé
-        Customer cus1=new Customer(queue);//Çàïóñêàåì 1 ïîòðåáèòåëÿ
-        Customer cus2=new Customer(queue);//Çàïóñêàåì 2 ïîòðåáèòåëÿ
-    }
+
+public static void main (String[] args)
+
+{
+
+Queue queue =new Queue();//Создаём склад
+
+Producer p=new Producer(queue);//Запускаем производителей
+
+Customer cus1=new Customer(queue);//Запускаем 1 потребителя
+
+Customer cus2=new Customer(queue);//Запускаем 2 потребителя
+
+}
+
 }
